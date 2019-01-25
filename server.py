@@ -43,9 +43,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         # print ("Got request: %s\n" % self.data)
         
-
+        # Split the data by \r\n and parse into dictionary
         self.data_lst = self.data.split(bytearray('\r\n','utf-8'))
-
         handle_dic = {}
         for val in self.data_lst:
             val = val.split(bytearray(': ','utf-8'))
@@ -54,26 +53,26 @@ class MyWebServer(socketserver.BaseRequestHandler):
             else:
                 handle_dic[val[0].decode("utf-8")] = val[1]
 
+        # Get first part where GET, POST, etc. commands can be found
         parse_cmnd = handle_dic["Command"].split()
-
         if (parse_cmnd[0] == bytearray('GET','utf-8')):
             page = ""
+
+            # Decide what is being requested by and appropriate reply
             if parse_cmnd != []:
                 page = parse_cmnd[1].decode("utf-8")
                 if page == "/":
                     page = "/index.html"
                 elif page.endswith("/"):
-                    print (page)
                     check_dir = Path('www'+page)
-                    # check_dir = page[page[:-1].rfind('/'):].strip("/")
                     if check_dir.is_dir():
                         page += "index.html"
                     else:
-                        print("here")
                         to_send = 'HTTP/1.1 404 Not Found\r\n\r\n<html><body><center><h3>Error 404: File not found</h3><p>Python HTTP Server</p></center></body></html>'.encode('utf-8')
                         self.request.sendall(to_send)
                         end = True
 
+            # Continues on if there is the requested directory is valid
             if not end:
                 myfile = 'www' + page
                 myfile2 = 'www' + page +'/index.html'
@@ -81,8 +80,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 my_path2 = Path(myfile2)
                 file_to_display = page + '/'
 
+                # Continues if there is such a file in the directory
                 if my_path.is_file():
-                    
                     html_css = True
                     if page.endswith(".html"):
                         mimetype = 'text/html'
@@ -92,7 +91,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
                         html_css = False
                         to_send = 'HTTP/1.1 404 Not HTML or CSS\r\n\r\n'.encode('utf-8')
                         self.request.sendall(to_send)
-                        
+                    
+                    # Continue if the request is HTML or CSS
                     if html_css:
                         file = open(myfile,'rb')
                         response = file.read()
@@ -105,6 +105,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
                         final_response += response
                         self.request.sendall(final_response)
                 else:
+                    # Check if the .../ version exists
                     if my_path2.is_file():
                         to_send = ('HTTP/1.1 301 Permanently moved to {}\r\n\r\n<html><body><center><h3>Error 301 Permanently moved to {}</h3><p>Python HTTP Server</p></center></body></html>'.format(file_to_display, file_to_display)).encode('utf-8')
                     else:
@@ -128,5 +129,5 @@ if __name__ == "__main__":
         server.serve_forever()
 
     except KeyboardInterrupt:
-        print ('\n^C received, shutting down the web server')
+        print ('\n^C received. Shutting down web server')
         server.socket.close()
