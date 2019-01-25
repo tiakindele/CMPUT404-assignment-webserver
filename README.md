@@ -24,9 +24,7 @@ examples thus some of the code is Copyright © 2001-2013 Python
 Software Foundation; All Rights Reserved under the PSF license (GPL
 compatible) http://docs.python.org/2/library/socketserver.html
 
-========================
-Toluwanimi Akindele
-www.github.com/tiakindele
-toluwani
-
-Screenshots are named: "Deeper Example Page Screenshot" and  "Example Page Screenshot"
+<h1>Info</h1>
+Toluwanimi Akindele<br/>toluwani<br/>
+www.github.com/tiakindele/CMPUT404-assignment-webserver<br/>
+Screenshots are named: "Deeper Example Page Screenshot" and  "Example Page Screenshot"  
